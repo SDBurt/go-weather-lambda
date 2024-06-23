@@ -193,3 +193,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/go,git,osx,linux,macos,dotenv,windows,terraform,terragrunt,visualstudiocode
 
 bootstrap
+*.zip
