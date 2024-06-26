@@ -12,9 +12,9 @@ import (
 )
 
 type WeatherData struct {
-	Name        string  `json:"name"`
-	Temperature float64 `json:"temperature"`
-	Humidity    int     `json:"humidity"`
+	City        string  `json:"City"`
+	Temperature float64 `json:"Temperature"`
+	Humidity    int     `json:"Humidity"`
 }
 
 func SaveWeatherData(data WeatherData) error {
@@ -40,6 +40,6 @@ func SaveWeatherData(data WeatherData) error {
 		return err
 	}
 
-	log.Info(fmt.Sprintf("Successfully saved weather data for name: %s", data.Name))
+	log.Info(fmt.Sprintf("Successfully saved weather data for city: %s", data.City))
 	return nil
 }

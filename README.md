@@ -1,4 +1,3 @@
-
 # Weather Lambda Function Demo
 
 This repository contains a demo of a Lambda function for a weather app. The Lambda function is written in [Golang](https://golang.org/) and is designed to retrieve weather data from the third-party API, [Tomorrow.io](https://tomorrow.io/).
@@ -17,18 +16,19 @@ Before running the Lambda function, make sure you have the following:
 For best practices, we will store the Terraform state in an S3 bucket. Follow these steps to set up the backend:
 
 1. **Create an S3 Bucket and DynamoDB Table** (only needed once):
+
    ```sh
-   aws s3api create-bucket --bucket weather-app-state-bucket --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
-   aws dynamodb create-table --table-name weather-app-terraform-lock --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+   aws s3api create-bucket --bucket <unique_bucket_name> --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
+   aws dynamodb create-table --table-name terraform-lock --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
    ```
 
 2. **Update the `backend.tf` file in the `devops` directory**:
    ```hcl
    terraform {
      backend "s3" {
-       bucket         = "my-terraform-state-bucket"
+       bucket         = "unique_bucket_name>"
        key            = "weather-app/terraform.tfstate"
-       region         = "us-west-1"
+       region         = "us-west-2"
        dynamodb_table = "terraform-lock"
      }
    }
@@ -38,28 +38,33 @@ For best practices, we will store the Terraform state in an S3 bucket. Follow th
 
 To install and deploy the Lambda function, follow these steps:
 
-1. **Clone the Repository**: 
+1. **Clone the Repository**:
+
    ```sh
    git clone https://github.com/SDBurt/go-weather-lambda.git
    cd go-weather-lambda
    ```
 
-2. **Navigate to the Project Directory**: 
+2. **Navigate to the Project Directory**:
+
    ```sh
    cd app
    ```
 
 3. **Build and Zip the Executable for your Lambda Function**:
+
    ```sh
    make build
    ```
 
 4. **Navigate to the `devops` Directory**:
+
    ```sh
    cd ../devops
    ```
 
 5. **Initialize Terraform**:
+
    ```sh
    terraform init
    ```
@@ -85,6 +90,7 @@ To use the Lambda function, follow these steps:
 To test the Lambda function, you can use the `curl` command as shown in the usage section. The function URL provided by Terraform will accept query parameters and return the weather data for the specified city.
 
 Example:
+
 ```sh
 curl "https://<your-lambda-url>?city=NewYork"
 ```

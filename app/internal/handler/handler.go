@@ -38,12 +38,18 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	weatherData := weatherResponse.Data.Values
 	weatherLocation := weatherResponse.Location
 
+	log.Info(fmt.Sprintf("WeatherData for city: %s, %+v", city, weatherData))
+	log.Info(fmt.Sprintf("WeatherLocation for city: %s, %+v", city, weatherLocation))
+
 	// Save to DynamoDB
 	dbData := db.WeatherData{
-		Name:        weatherLocation.Name,
+		City:        city,
 		Temperature: weatherData.Temperature,
 		Humidity:    weatherData.Humidity,
 	}
+
+	log.Info(fmt.Sprintf("Saving %+v to DynamoDB", dbData))
+
 	if err := db.SaveWeatherData(dbData); err != nil {
 		log.Error(fmt.Sprintf("Error saving weather data to DynamoDB: %v", err))
 		return events.APIGatewayProxyResponse{StatusCode: 500}, err

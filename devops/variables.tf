@@ -1,5 +1,15 @@
-variable "aws_region" {
-  description = "The AWS region to deploy the Lambda function"
+variable "WEATHER_API_KEY" {
+  description = "API key for the Tomorrow.io API"
   type        = string
-  default     = "us-west-2"
+}
+
+variable "DB_TABLE_NAME" {
+  description = "Name of the DynamoDB table to store weather data"
+  type        = string
+  default     = "weather-data"
+}
+
+variable "VERSION" {
+  description = "Version of the Lambda function"
+  type        = string
 }

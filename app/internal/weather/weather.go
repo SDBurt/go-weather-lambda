@@ -50,6 +50,11 @@ type WeatherResponse struct {
 
 func FetchWeather(city string) (WeatherResponse, error) {
 	apiKey := os.Getenv("WEATHER_API_KEY")
+
+	if apiKey == "" {
+		return WeatherResponse{}, fmt.Errorf("WEATHER_API_KEY is required")
+	}
+
 	url := fmt.Sprintf("https://api.tomorrow.io/v4/weather/realtime?location=%s&apikey=%s", city, apiKey)
 
 	log.Info(fmt.Sprintf("Fetching weather data for city: %s", city))
@@ -63,6 +68,13 @@ func FetchWeather(city string) (WeatherResponse, error) {
 		return WeatherResponse{}, err
 	}
 	defer resp.Body.Close()
+
+	log.Info(fmt.Sprintf("Received response with status code: %d", resp.StatusCode))
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return WeatherResponse{}, fmt.Errorf("received response with status code: %d", resp.StatusCode)
+	}
+
+	log.Info(fmt.Sprintf("Response: %+v", resp))
 
 	var weatherResponse WeatherResponse
 	if err := json.NewDecoder(resp.Body).Decode(&weatherResponse); err != nil {
