@@ -18,8 +18,16 @@ For best practices, we will store the Terraform state in an S3 bucket. Follow th
 1. **Create an S3 Bucket and DynamoDB Table** (only needed once):
 
    ```sh
-   aws s3api create-bucket --bucket <unique_bucket_name> --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
-   aws dynamodb create-table --table-name terraform-lock --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+   aws s3api create-bucket \
+    --bucket <unique_bucket_name> \
+    --region us-west-2 \
+    --create-bucket-configuration LocationConstraint=us-west-2
+
+   aws dynamodb create-table \
+    --table-name terraform-lock \
+    --attribute-definitions AttributeName=LockID,AttributeType=S \
+    --key-schema AttributeName=LockID,KeyType=HASH \
+    --billing-mode PAY_PER_REQUEST
    ```
 
 2. **Update the `backend.tf` file in the `devops` directory**:
