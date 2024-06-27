@@ -277,20 +277,23 @@ import (
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	city := request.QueryStringParameters["city"]
 
+    // Sanitize city parameter
+    sanitizedCity := url.QueryEscape(city)
+
 	// Validate city
-	if city == "" {
+	if sanitizedCity == "" {
 		log.Error("City parameter is required")
 		return events.APIGatewayProxyResponse{StatusCode: 400}, nil
 	}
 
 	// Check cache first
-	if cachedData, found := cache.GetCache(city); found {
-		log.Info(fmt.Sprintf("Returning cached data for city: %s", city))
+	if cachedData, found := cache.GetCache(sanitizedCity); found {
+		log.Info(fmt.Sprintf("Returning cached data for city: %s", sanitizedCity))
 		return buildResponse(cachedData)
 	}
 
 	// Fetch weather data
-	weatherResponse, err := weather.FetchWeather(city)
+	weatherResponse, err := weather.FetchWeather(sanitizedCity)
 	if err != nil {
 		log.Error(fmt.Sprintf("Error fetching weather data: %v", err))
 		return events.APIGatewayProxyResponse{StatusCode: 500}, err
@@ -300,7 +303,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	// Save to DynamoDB
 	dbData := db.WeatherData{
-		City:        city,
+		City:        sanitizedCity,
 		Temperature: weatherData.Temperature,
 		Humidity:    weatherData.Humidity,
 	}
@@ -311,9 +314,9 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	}
 
 	// Cache the response
-	cache.SetCache(city, dbData)
+	cache.SetCache(sanitizedCity, dbData)
 
-	log.Info(fmt.Sprintf("Returning new data for city: %s", city))
+	log.Info(fmt.Sprintf("Returning new data for city: %s", sanitizedCity))
 	return buildResponse(dbData)
 }
 
